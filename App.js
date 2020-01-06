@@ -1,50 +1,31 @@
 import React, { Component } from "react"
-import { StyleSheet, Dimensions, FlatList, View } from "react-native"
+import { BottomNavigation } from "react-native-paper"
 
-import CharacterCard from "./components/CharacterCard"
-const { width, height } = Dimensions.get("screen")
+import Characters from "./screens/Characters"
 
-const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+const characters = () => <Characters />
+
 export default class App extends Component {
   state = {
-    characterData: {}
+    index: 0,
+    routes: [
+      { key: "Characters", title: "Characters", icon: "history" },
+      { key: "Characters", title: "Characters", icon: "history" }
+    ]
   }
-  renderItem = ({ item }) => {
-    return <CharacterCard id={item} />
-  }
-  formatData(data, numColumns) {
-    const numberOfFullRows = Math.floor(data.length / numColumns)
-    let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns
-    while (
-      numberOfElementsLastRow !== numColumns &&
-      numberOfElementsLastRow !== 0
-    ) {
-      data.push(0)
-      numberOfElementsLastRow++
-    }
-    return data
-  }
+
+  _handleIndexChange = index => this.setState({ index })
+
+  _renderScene = BottomNavigation.SceneMap({
+    Characters: characters
+  })
   render() {
-    const numColumns = 2
     return (
-      <FlatList
-        data={this.formatData(ids, numColumns)}
-        renderItem={this.renderItem}
-        keyExtractor={(_, index) => index.toString()}
-        style={styles.previewCard}
-        contentContainerStyle={styles.container}
-        numColumns={numColumns}
+      <BottomNavigation
+        navigationState={this.state}
+        onIndexChange={this._handleIndexChange}
+        renderScene={this._renderScene}
       />
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    backgroundColor: "#000"
-  },
-  previewCard: {
-    flex: 1
-  }
-})
