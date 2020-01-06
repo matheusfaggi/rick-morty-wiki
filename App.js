@@ -1,9 +1,10 @@
 import React, { Component } from "react"
-import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native"
+import { StyleSheet, Dimensions, FlatList, View } from "react-native"
 
 import CharacterCard from "./components/CharacterCard"
+const { width, height } = Dimensions.get("screen")
 
-const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 export default class App extends Component {
   state = {
     characterData: {}
@@ -11,13 +12,29 @@ export default class App extends Component {
   renderItem = ({ item }) => {
     return <CharacterCard id={item} />
   }
+  formatData(data, numColumns) {
+    const numberOfFullRows = Math.floor(data.length / numColumns)
+    let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns
+    while (
+      numberOfElementsLastRow !== numColumns &&
+      numberOfElementsLastRow !== 0
+    ) {
+      data.push(0)
+      numberOfElementsLastRow++
+    }
+    return data
+  }
   render() {
+    const numColumns = 2
     return (
       <FlatList
-        data={ids}
+        data={this.formatData(ids, numColumns)}
         renderItem={this.renderItem}
         keyExtractor={(_, index) => index.toString()}
-      ></FlatList>
+        style={styles.previewCard}
+        contentContainerStyle={styles.container}
+        numColumns={numColumns}
+      />
     )
   }
 }
@@ -25,7 +42,9 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    backgroundColor: "#fff",
-    flexDirection: "column"
+    backgroundColor: "#000"
+  },
+  previewCard: {
+    flex: 1
   }
 })

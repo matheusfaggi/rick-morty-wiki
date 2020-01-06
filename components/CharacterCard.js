@@ -5,11 +5,13 @@ import { TouchableHighlight, StyleSheet, Modal } from "react-native"
 import CharacterModal from "./CharacterModal"
 
 const styles = StyleSheet.create({
-  modal: {
-    display: "flex"
-  },
   cardPreview: {
-    flex: 1
+    flex: 1,
+    margin: 5
+  },
+  emptyCardPreview: {
+    flex: 1,
+    backgroundColor: "#000"
   }
 })
 
@@ -22,32 +24,43 @@ export default class CharacterComponent extends Component {
 
   constructor(props) {
     super(props)
-    Api.getCharacters(props.id).then(({ data }) => {
-      this.setState({ data, loading: false })
-    })
+    const { id } = props
+    if (id !== 0) {
+      Api.getCharacters(id).then(({ data }) => {
+        this.setState({ data, loading: false })
+      })
+    }
   }
 
   render() {
     const { data, loading, visible } = this.state
     return (
       <>
-        <Modal visible={visible} style={styles.modal}>
-          <CharacterModal
-            data={data}
-            hideModal={() => this.setState({ visible: false })}
-            loading={loading}
-          />
-        </Modal>
-        <Card style={styles.cardPreview}>
-          <TouchableHighlight onPress={() => this.setState({ visible: true })}>
-            <Card.Cover
-              source={{
-                uri: loading ? "http://shorturl.at/gLZ28" : data.image
-              }}
-            />
-          </TouchableHighlight>
-          <Card.Title title={loading ? "" : data.name} />
-        </Card>
+        {this.props.id === 0 ? (
+          <Card style={styles.emptyCardPreview} visible={false}></Card>
+        ) : (
+          <>
+            <Modal visible={visible} style={styles.modal} animationType="slide">
+              <CharacterModal
+                data={data}
+                hideModal={() => this.setState({ visible: false })}
+                loading={loading}
+              />
+            </Modal>
+            <Card style={styles.cardPreview}>
+              <TouchableHighlight
+                onPress={() => this.setState({ visible: true })}
+              >
+                <Card.Cover
+                  source={{
+                    uri: loading ? "http://shorturl.at/gLZ28" : data.image
+                  }}
+                />
+              </TouchableHighlight>
+              <Card.Title title={loading ? "" : data.name} />
+            </Card>
+          </>
+        )}
       </>
     )
   }
